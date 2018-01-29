@@ -9,9 +9,9 @@ import {
 // implementations of the tuple function with distinct tuple.prototype
 // objects, but the shared pool of tuple objects must be the same across
 // all implementations.
-const root = globalKey in global
-  ? global[globalKey]
-  : def(global, globalKey, new UniversalWeakMap, false);
+const root = globalKey in Array
+  ? Array[globalKey]
+  : def(Array, globalKey, new UniversalWeakMap, false);
 
 const { concat } = Array.prototype;
 const reusableTempArray = [];

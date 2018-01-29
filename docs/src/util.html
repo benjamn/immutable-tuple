@@ -121,19 +121,23 @@ pass a <code>tuple</code> object as <code>this</code> without first converting i
     <span class="hljs-keyword">const</span> desc = <span class="hljs-built_in">Object</span>.getOwnPropertyDescriptor(<span class="hljs-built_in">Array</span>.prototype, name);
     fn(name, desc, !! mustConvertThisToArray);
   }
-  call(<span class="hljs-string">"slice"</span>);
+
+  call(<span class="hljs-string">"every"</span>);
+  call(<span class="hljs-string">"filter"</span>);
+  call(<span class="hljs-string">"find"</span>);
+  call(<span class="hljs-string">"findIndex"</span>);
+  call(<span class="hljs-string">"forEach"</span>);
   call(<span class="hljs-string">"includes"</span>);
   call(<span class="hljs-string">"indexOf"</span>);
-  call(<span class="hljs-string">"forEach"</span>);
-  call(<span class="hljs-string">"filter"</span>);
+  call(<span class="hljs-string">"join"</span>);
+  call(<span class="hljs-string">"lastIndexOf"</span>);
   call(<span class="hljs-string">"map"</span>);
-  call(<span class="hljs-string">"every"</span>);
-  call(<span class="hljs-string">"some"</span>);
   call(<span class="hljs-string">"reduce"</span>);
   call(<span class="hljs-string">"reduceRight"</span>);
-  call(<span class="hljs-string">"toString"</span>);
+  call(<span class="hljs-string">"slice"</span>);
+  call(<span class="hljs-string">"some"</span>);
   call(<span class="hljs-string">"toLocaleString"</span>);
-  call(<span class="hljs-string">"join"</span>);</pre></div></div>
+  call(<span class="hljs-string">"toString"</span>);</pre></div></div>
             
         </li>
         
@@ -151,10 +155,7 @@ appropriately reversed/sorted.</p>
             </div>
             
             <div class="content"><div class='highlight'><pre>  call(<span class="hljs-string">"reverse"</span>, <span class="hljs-literal">true</span>);
-  call(<span class="hljs-string">"sort"</span>, <span class="hljs-literal">true</span>);
-  call(<span class="hljs-string">"lastIndexOf"</span>);
-  call(<span class="hljs-string">"find"</span>);
-  call(<span class="hljs-string">"findIndex"</span>);</pre></div></div>
+  call(<span class="hljs-string">"sort"</span>, <span class="hljs-literal">true</span>);</pre></div></div>
             
         </li>
         

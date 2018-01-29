@@ -11,7 +11,7 @@ import {
 // When called with any number of arguments, this function returns an
 // object that inherits from `tuple.prototype` and is guaranteed to be
 // `===` any other `tuple` object that has exactly the same items. In
-// computer science jargon, tuple objects are "internalized" or just
+// computer science jargon, `tuple` instances are "internalized" or just
 // "interned," which allows for constant-time equality checking, and makes
 // it possible for tuple objects to be used as `Map` or `WeakMap` keys, or
 // stored in a `Set`.
@@ -23,8 +23,8 @@ export default function tuple(...items) {
 export { tuple };
 
 // If this package is installed multiple times, there could be mutiple
-// implementations of the tuple function with distinct `tuple.prototype`
-// objects, but the shared pool of tuple objects must be the same across
+// implementations of the `tuple` function with distinct `tuple.prototype`
+// objects, but the shared pool of `tuple` objects must be the same across
 // all implementations. While it would be ideal to use the `global`
 // object, there's no reliable way to get the global object across all JS
 // environments without using the `Function` constructor, so instead we
@@ -36,18 +36,18 @@ const root = globalKey in Array
 function intern(array) {
   let node = root;
 
+  // Because we are building a tree of *weak* maps, the tree will not
+  // prevent objects in tuples from being garbage collected, since the
+  // tree itself will be pruned over time when the corresponding `tuple`
+  // objects become unreachable. In addition to internalization, this
+  // property is a key advantage of the `immutable-tuple` package.
   array.forEach(item => {
-    // Because we are building a tree of *weak* maps, the tree will not
-    // prevent objects in tuples from being garbage collected, since the
-    // tree itself will be pruned over time when the corresponding tuple
-    // objects become unreachable. In addition to internalization, this
-    // property is a key advantage of the `immutable-tuple` package.
     node = node.get(item) || node.set(item, new UniversalWeakMap);
   });
 
+  // If a `tuple` object has already been created for exactly these items,
+  // return that object again.
   if (node.tuple) {
-    // If a tuple object has already been created for exactly these items,
-    // return that object again.
     return node.tuple;
   }
 
@@ -58,7 +58,7 @@ function intern(array) {
   array.forEach((item, i) => def(t, i, item, true));
   def(t, "length", array.length, false);
 
-  // Remember this new tuple object so that we can return the same object
+  // Remember this new `tuple` object so that we can return the same object
   // earlier next time.
   return node.tuple = t;
 }

@@ -25,27 +25,30 @@ export function forEachArrayMethod(fn) {
     const desc = Object.getOwnPropertyDescriptor(Array.prototype, name);
     fn(name, desc, !! mustConvertThisToArray);
   }
-  call("slice");
+
+  call("every");
+  call("filter");
+  call("find");
+  call("findIndex");
+  call("forEach");
   call("includes");
   call("indexOf");
-  call("forEach");
-  call("filter");
+  call("join");
+  call("lastIndexOf");
   call("map");
-  call("every");
-  call("some");
   call("reduce");
   call("reduceRight");
-  call("toString");
+  call("slice");
+  call("some");
   call("toLocaleString");
-  call("join");
+  call("toString");
+
   // The `reverse` and `sort` methods are usually destructive, but for
   // `tuple` objects they return a new `tuple` object that has been
   // appropriately reversed/sorted.
   call("reverse", true);
   call("sort", true);
-  call("lastIndexOf");
-  call("find");
-  call("findIndex");
+
   // Make `[...someTuple]` work.
   call(useSymbol && Symbol.iterator || "@@iterator");
 }

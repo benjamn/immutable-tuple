@@ -92,7 +92,7 @@
               <p>When called with any number of arguments, this function returns an
 object that inherits from <code>tuple.prototype</code> and is guaranteed to be
 <code>===</code> any other <code>tuple</code> object that has exactly the same items. In
-computer science jargon, tuple objects are “internalized” or just
+computer science jargon, <code>tuple</code> instances are “internalized” or just
 “interned,” which allows for constant-time equality checking, and makes
 it possible for tuple objects to be used as <code>Map</code> or <code>WeakMap</code> keys, or
 stored in a <code>Set</code>.</p>
@@ -128,8 +128,8 @@ stored in a <code>Set</code>.</p>
                 <a class="pilcrow" href="#section-5">&#182;</a>
               </div>
               <p>If this package is installed multiple times, there could be mutiple
-implementations of the tuple function with distinct <code>tuple.prototype</code>
-objects, but the shared pool of tuple objects must be the same across
+implementations of the <code>tuple</code> function with distinct <code>tuple.prototype</code>
+objects, but the shared pool of <code>tuple</code> objects must be the same across
 all implementations. While it would be ideal to use the <code>global</code>
 object, there’s no reliable way to get the global object across all JS
 environments without using the <code>Function</code> constructor, so instead we
@@ -142,9 +142,7 @@ use the global <code>Array</code> constructor as a shared namespace.</p>
   : def(<span class="hljs-built_in">Array</span>, globalKey, <span class="hljs-keyword">new</span> UniversalWeakMap, <span class="hljs-literal">false</span>);
 
 <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">intern</span>(<span class="hljs-params">array</span>) </span>{
-  <span class="hljs-keyword">let</span> node = root;
-
-  array.forEach(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> {</pre></div></div>
+  <span class="hljs-keyword">let</span> node = root;</pre></div></div>
             
         </li>
         
@@ -157,16 +155,15 @@ use the global <code>Array</code> constructor as a shared namespace.</p>
               </div>
               <p>Because we are building a tree of <em>weak</em> maps, the tree will not
 prevent objects in tuples from being garbage collected, since the
-tree itself will be pruned over time when the corresponding tuple
+tree itself will be pruned over time when the corresponding <code>tuple</code>
 objects become unreachable. In addition to internalization, this
 property is a key advantage of the <code>immutable-tuple</code> package.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    node = node.get(item) || node.set(item, <span class="hljs-keyword">new</span> UniversalWeakMap);
-  });
-
-  <span class="hljs-keyword">if</span> (node.tuple) {</pre></div></div>
+            <div class="content"><div class='highlight'><pre>  array.forEach(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> {
+    node = node.get(item) || node.set(item, <span class="hljs-keyword">new</span> UniversalWeakMap);
+  });</pre></div></div>
             
         </li>
         
@@ -177,12 +174,13 @@ property is a key advantage of the <code>immutable-tuple</code> package.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
-              <p>If a tuple object has already been created for exactly these items,
+              <p>If a <code>tuple</code> object has already been created for exactly these items,
 return that object again.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">return</span> node.tuple;
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">if</span> (node.tuple) {
+    <span class="hljs-keyword">return</span> node.tuple;
   }
 
   <span class="hljs-keyword">const</span> t = <span class="hljs-built_in">Object</span>.create(tuple.prototype);</pre></div></div>
@@ -213,7 +211,7 @@ return that object again.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
-              <p>Remember this new tuple object so that we can return the same object
+              <p>Remember this new <code>tuple</code> object so that we can return the same object
 earlier next time.</p>
 
             </div>

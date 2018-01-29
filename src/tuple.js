@@ -1,7 +1,18 @@
 import { UniversalWeakMap } from "./universal-weak-map.js";
-import { brand, forEachArrayMethod } from "./util.js";
+import {
+  brand,
+  globalKey,
+  forEachArrayMethod,
+} from "./util.js";
 
-const root = new UniversalWeakMap;
+// If this package is installed multiple times, there could be mutiple
+// implementations of the tuple function with distinct tuple.prototype
+// objects, but the shared pool of tuple objects must be the same across
+// all implementations.
+const root = globalKey in global
+  ? global[globalKey]
+  : def(global, globalKey, new UniversalWeakMap, false);
+
 const { concat } = Array.prototype;
 const reusableTempArray = [];
 
@@ -38,6 +49,7 @@ function def(obj, name, value, enumerable) {
     writable: false,
     configurable: false
   });
+  return value;
 }
 
 function isTuple(that) {

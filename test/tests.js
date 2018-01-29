@@ -2,6 +2,7 @@
 
 import assert from "assert";
 import tuple from "../dist/tuple.js";
+import esTuple from "../dist/tuple.mjs";
 
 describe("tuple basics", function () {
   it("should be defined and importable", function () {
@@ -17,6 +18,19 @@ describe("tuple basics", function () {
     assert.strictEqual(tuple.isTuple(tuple.prototype), true);
     assert.strictEqual(tuple.isTuple(tuple("asdf", {})), true);
     assert.strictEqual(tuple.isTuple(null), false);
+  });
+
+  it("should tolerate multiple package copies", function () {
+    assert.notStrictEqual(tuple, esTuple);
+    assert.notStrictEqual(tuple.prototype, esTuple.prototype);
+
+    assert.strictEqual(tuple.isTuple(esTuple(1,2,3)), true);
+    assert.strictEqual(esTuple.isTuple(tuple(1,2,3)), true);
+
+    assert.strictEqual(
+      tuple("I","am","tuple"),
+      esTuple("tuple","am","I").reverse()
+    );
   });
 });
 

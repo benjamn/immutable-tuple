@@ -4,6 +4,10 @@ export const brand = useSymbol
   ? Symbol.for("immutable-tuple")
   : "@@__IMMUTABLE_TUPLE__@@";
 
+export const globalKey = useSymbol
+  ? Symbol.for("immutable-tuple-root")
+  : "@@__IMMUTABLE_TUPLE_ROOT__@@";
+
 // The mustConvertThisToArray value is true if the corresponding Array
 // method will not attempt to modify `this`, which means we can pass a
 // Tuple object as `this` without first converting it to an Array.

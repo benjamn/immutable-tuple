@@ -43,5 +43,8 @@
     "rollup": "^0.55.1",
     "rollup-plugin-buble": "^0.18.0",
     "rollup-plugin-uglify": "^3.0.0"
+  },
+  "reify": {
+    "cache-directory": "test/.cache"
   }
 }

@@ -55,35 +55,32 @@ function isTuple(that) {
   return !! (that && that[brand] === true);
 }
 
-tuple.isTuple = isTuple;
+def(tuple.prototype, brand, true, false);
 
-// Turn this Tuple into an ordinary array, optionally reusing an
-// existing array.
-tuple.prototype.toArray = function (array = []) {
-  const { length } = this;
-  let i = length;
-  while (i--) array[i] = this[i];
-  array.length = length;
-  return array;
-};
+tuple.isTuple = isTuple;
 
 // Like Array.prototype.concat, except that extra effort is required to
 // convert any tuple arguments to arrays, so that Array.prototype.concat
 // will do the right thing.
 tuple.prototype.concat = function (...args) {
-  return intern(concat.apply(this.toArray(), args.map(
-    item => isTuple(item) ? item.toArray() : item
+  return intern(concat.apply(toArray(this), args.map(
+    item => isTuple(item) ? toArray(item) : item
   )));
 };
 
-def(tuple.prototype, brand, true, false);
+function toArray(tuple) {
+  const array = [];
+  let i = tuple.length;
+  while (i--) array[i] = tuple[i];
+  return array;
+}
 
 forEachArrayMethod((name, desc, mustConvertThisToArray) => {
   const method = desc && desc.value;
   if (typeof method === "function") {
     desc.value = function (...args) {
       const result = method.apply(
-        mustConvertThisToArray ? this.toArray() : this,
+        mustConvertThisToArray ? toArray(this) : this,
         args
       );
       return Array.isArray(result) ? intern(result) : result;

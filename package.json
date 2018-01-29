@@ -1,7 +1,7 @@
 {
   "name": "immutable-tuple",
   "version": "0.4.1",
-  "description": "Immutable finite list objects with constant-time deep equality testing (===) and no memory leaks",
+  "description": "Immutable finite list objects with constant-time equality testing (===) and no memory leaks",
   "license": "MIT",
   "author": {
     "name": "Ben Newman",
@@ -35,6 +35,7 @@
     "interned",
     "internalized",
     "memoization",
+    "equality",
     "deep equality",
     "weakmap"
   ],

@@ -14,7 +14,6 @@ const root = globalKey in Array
   : def(Array, globalKey, new UniversalWeakMap, false);
 
 const { concat } = Array.prototype;
-const reusableTempArray = [];
 
 export default function tuple(...items) {
   return intern(items);
@@ -62,10 +61,8 @@ tuple.isTuple = isTuple;
 // existing array.
 tuple.prototype.toArray = function (array = []) {
   const { length } = this;
-  for (let i = 0; i < length; ++i) {
-    const item = this[i];
-    array[i] = isTuple(item) ? item.toArray() : item;
-  }
+  let i = length;
+  while (i--) array[i] = this[i];
   array.length = length;
   return array;
 };
@@ -74,10 +71,9 @@ tuple.prototype.toArray = function (array = []) {
 // convert any tuple arguments to arrays, so that Array.prototype.concat
 // will do the right thing.
 tuple.prototype.concat = function (...args) {
-  return intern(concat.apply(
-    this.toArray(reusableTempArray),
-    args.map(item => isTuple(item) ? item.toArray() : item)
-  ));
+  return intern(concat.apply(this.toArray(), args.map(
+    item => isTuple(item) ? item.toArray() : item
+  )));
 };
 
 def(tuple.prototype, brand, true, false);
@@ -87,9 +83,7 @@ forEachArrayMethod((name, desc, mustConvertThisToArray) => {
   if (typeof method === "function") {
     desc.value = function (...args) {
       const result = method.apply(
-        mustConvertThisToArray
-          ? this.toArray(reusableTempArray)
-          : this,
+        mustConvertThisToArray ? this.toArray() : this,
         args
       );
       return Array.isArray(result) ? intern(result) : result;

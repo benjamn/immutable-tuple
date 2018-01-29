@@ -13,8 +13,6 @@ const root = globalKey in Array
   ? Array[globalKey]
   : def(Array, globalKey, new UniversalWeakMap, false);
 
-const { concat } = Array.prototype;
-
 export default function tuple(...items) {
   return intern(items);
 }
@@ -62,6 +60,7 @@ tuple.isTuple = isTuple;
 // Like Array.prototype.concat, except that extra effort is required to
 // convert any tuple arguments to arrays, so that Array.prototype.concat
 // will do the right thing.
+const { concat } = Array.prototype;
 tuple.prototype.concat = function (...args) {
   return intern(concat.apply(toArray(this), args.map(
     item => isTuple(item) ? toArray(item) : item

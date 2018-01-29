@@ -1,4 +1,5 @@
 import { UniversalWeakMap } from "./universal-weak-map.js";
+import { brand } from "./util.js";
 const root = new UniversalWeakMap;
 
 export function tuple(...items) {
@@ -32,6 +33,10 @@ export class Tuple {
   static from(iterable) {
     return Tuple.intern([...iterable]);
   }
+
+  static isTuple(that) {
+    return that[brand] === true;
+  }
 }
 
 function def(obj, name, value, enumerable) {
@@ -42,3 +47,5 @@ function def(obj, name, value, enumerable) {
     configurable: false
   });
 }
+
+def(Tuple.prototype, brand, true, false);

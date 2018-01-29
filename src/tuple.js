@@ -1,5 +1,5 @@
 import { UniversalWeakMap } from "./universal-weak-map.js";
-import { brand, arrayMethods } from "./util.js";
+import { brand, forEachArrayMethod } from "./util.js";
 
 const root = new UniversalWeakMap;
 const { concat } = Array.prototype;
@@ -72,12 +72,16 @@ function def(obj, name, value, enumerable) {
 
 def(Tuple.prototype, brand, true, false);
 
-arrayMethods.forEach(name => {
-  const desc = Object.getOwnPropertyDescriptor(Array.prototype, name);
+forEachArrayMethod((name, desc, mustConvertThisToArray) => {
   const method = desc && desc.value;
   if (typeof method === "function") {
     desc.value = function (...args) {
-      const result = method.apply(this.toArray(reusableTempArray), args);
+      const result = method.apply(
+        mustConvertThisToArray
+          ? this.toArray(reusableTempArray)
+          : this,
+        args
+      );
       return Array.isArray(result) ? Tuple.intern(result) : result;
     };
     Object.defineProperty(Tuple.prototype, name, desc);

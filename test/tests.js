@@ -43,9 +43,11 @@ describe("Array methods", function () {
   });
 
   it("forEach", function () {
+    const t = tuple("a", "b", "c", "d");
     const output = {};
-    tuple("a", "b", "c", "d").forEach(function (item, i) {
+    t.forEach(function (item, i, obj) {
       output[item] = i;
+      assert.strictEqual(obj, t);
     });
     assert.deepEqual(output, {
       a: 0,

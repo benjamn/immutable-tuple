@@ -8,7 +8,10 @@ import {
 // If this package is installed multiple times, there could be mutiple
 // implementations of the tuple function with distinct tuple.prototype
 // objects, but the shared pool of tuple objects must be the same across
-// all implementations.
+// all implementations. While it would be ideal to use the global object,
+// there's no reliable way to get the global object across all JS
+// environments without using the Function constructor, so instead we use
+// the global Array constructor as a shared namespace.
 const root = globalKey in Array
   ? Array[globalKey]
   : def(Array, globalKey, new UniversalWeakMap, false);

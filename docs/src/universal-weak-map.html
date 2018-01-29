@@ -56,7 +56,7 @@
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
               <p>A map data structure that holds object keys weakly, yet can also hold
-non-object keys, unlike the native WeakMap.</p>
+non-object keys, unlike the native <code>WeakMap</code>.</p>
 
             </div>
             
@@ -72,9 +72,9 @@ non-object keys, unlike the native WeakMap.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>Since a WeakMap cannot hold primitive values as keys, we need a
-backup Map instance to hold primitive keys. Both this._weakMap and
-this._strongMap are lazily initialized.</p>
+              <p>Since a <code>WeakMap</code> cannot hold primitive values as keys, we need a
+backup <code>Map</code> instance to hold primitive keys. Both <code>this._weakMap</code>
+and <code>this._strongMap</code> are lazily initialized.</p>
 
             </div>
             
@@ -91,7 +91,7 @@ this._strongMap are lazily initialized.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>Since get and set are the only methods used, that’s all I’ve
+              <p>Since <code>get</code> and <code>set</code> are the only methods used, that’s all I’ve
 implemented here.</p>
 
             </div>
@@ -116,8 +116,9 @@ implemented here.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
-              <p>An actual Map or WeakMap would return this here, but returning the
-value is more convenient below.</p>
+              <p>An actual <code>Map</code> or <code>WeakMap</code> would return <code>this</code> here, but
+returning the <code>value</code> is more convenient for the <code>tuple</code>
+implementation.</p>
 
             </div>
             

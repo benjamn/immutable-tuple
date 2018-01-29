@@ -1,15 +1,15 @@
 // A map data structure that holds object keys weakly, yet can also hold
-// non-object keys, unlike the native WeakMap.
+// non-object keys, unlike the native `WeakMap`.
 export class UniversalWeakMap {
   constructor() {
-    // Since a WeakMap cannot hold primitive values as keys, we need a
-    // backup Map instance to hold primitive keys. Both this._weakMap and
-    // this._strongMap are lazily initialized.
+    // Since a `WeakMap` cannot hold primitive values as keys, we need a
+    // backup `Map` instance to hold primitive keys. Both `this._weakMap`
+    // and `this._strongMap` are lazily initialized.
     this._weakMap = null;
     this._strongMap = null;
   }
 
-  // Since get and set are the only methods used, that's all I've
+  // Since `get` and `set` are the only methods used, that's all I've
   // implemented here.
 
   get(key) {
@@ -21,8 +21,9 @@ export class UniversalWeakMap {
 
   set(key, value) {
     this._getMap(key, true).set(key, value);
-    // An actual Map or WeakMap would return this here, but returning the
-    // value is more convenient below.
+    // An actual `Map` or `WeakMap` would return `this` here, but
+    // returning the `value` is more convenient for the `tuple`
+    // implementation.
     return value;
   }
 

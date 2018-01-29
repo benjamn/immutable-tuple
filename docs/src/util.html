@@ -55,18 +55,13 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              
+              <p>Although <code>Symbol</code> is widely supported these days, we can safely fall
+back to using a non-enumerable string property without violating any
+assumptions elsewhere in the implementation.</p>
+
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">const</span> useSymbol = <span class="hljs-keyword">typeof</span> <span class="hljs-built_in">Symbol</span> === <span class="hljs-string">"function"</span>;
-
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> brand = useSymbol
-  ? <span class="hljs-built_in">Symbol</span>.for(<span class="hljs-string">"immutable-tuple"</span>)
-  : <span class="hljs-string">"@@__IMMUTABLE_TUPLE__@@"</span>;
-
-<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> globalKey = useSymbol
-  ? <span class="hljs-built_in">Symbol</span>.for(<span class="hljs-string">"immutable-tuple-root"</span>)
-  : <span class="hljs-string">"@@__IMMUTABLE_TUPLE_ROOT__@@"</span>;</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">const</span> useSymbol = <span class="hljs-keyword">typeof</span> <span class="hljs-built_in">Symbol</span> === <span class="hljs-string">"function"</span>;</pre></div></div>
             
         </li>
         
@@ -77,9 +72,47 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>The mustConvertThisToArray value is true if the corresponding Array
-method will not attempt to modify <code>this</code>, which means we can pass a
-Tuple object as <code>this</code> without first converting it to an Array.</p>
+              <p>Used to mark <code>tuple.prototype</code> so that all objects that inherit from
+any <code>tuple.prototype</code> object (there could be more than one) will test
+positive according to <code>tuple.isTuple</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> brand = useSymbol
+  ? <span class="hljs-built_in">Symbol</span>.for(<span class="hljs-string">"immutable-tuple"</span>)
+  : <span class="hljs-string">"@@__IMMUTABLE_TUPLE__@@"</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Used to save a reference to the globally shared <code>UniversalWeakMap</code> that
+stores all known <code>tuple</code> objects.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> globalKey = useSymbol
+  ? <span class="hljs-built_in">Symbol</span>.for(<span class="hljs-string">"immutable-tuple-root"</span>)
+  : <span class="hljs-string">"@@__IMMUTABLE_TUPLE_ROOT__@@"</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>The <code>mustConvertThisToArray</code> value is true when the corresponding
+<code>Array</code> method does not attempt to modify <code>this</code>, which means we can
+pass a <code>tuple</code> object as <code>this</code> without first converting it to an
+<code>Array</code>.</p>
 
             </div>
             
@@ -100,13 +133,43 @@ Tuple object as <code>this</code> without first converting it to an Array.</p>
   call(<span class="hljs-string">"reduceRight"</span>);
   call(<span class="hljs-string">"toString"</span>);
   call(<span class="hljs-string">"toLocaleString"</span>);
-  call(<span class="hljs-string">"join"</span>);
-  call(<span class="hljs-string">"reverse"</span>, <span class="hljs-literal">true</span>);
+  call(<span class="hljs-string">"join"</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>The <code>reverse</code> and <code>sort</code> methods are usually destructive, but for
+<code>tuple</code> objects they return a new <code>tuple</code> object that has been
+appropriately reversed/sorted.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  call(<span class="hljs-string">"reverse"</span>, <span class="hljs-literal">true</span>);
   call(<span class="hljs-string">"sort"</span>, <span class="hljs-literal">true</span>);
   call(<span class="hljs-string">"lastIndexOf"</span>);
   call(<span class="hljs-string">"find"</span>);
-  call(<span class="hljs-string">"findIndex"</span>);
-  call(useSymbol &amp;&amp; <span class="hljs-built_in">Symbol</span>.iterator || <span class="hljs-string">"@@iterator"</span>);
+  call(<span class="hljs-string">"findIndex"</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Make <code>[...someTuple]</code> work.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  call(useSymbol &amp;&amp; <span class="hljs-built_in">Symbol</span>.iterator || <span class="hljs-string">"@@iterator"</span>);
 }</pre></div></div>
             
         </li>

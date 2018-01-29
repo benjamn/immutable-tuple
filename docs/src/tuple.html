@@ -55,15 +55,11 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-1">&#182;</a>
               </div>
-              
+              <p>See <a href="universal-weak-map.html"><code>universal-weak-map.js</code></a>.</p>
+
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">import</span> { UniversalWeakMap } <span class="hljs-keyword">from</span> <span class="hljs-string">"./universal-weak-map.js"</span>;
-<span class="hljs-keyword">import</span> {
-  brand,
-  globalKey,
-  forEachArrayMethod,
-} <span class="hljs-keyword">from</span> <span class="hljs-string">"./util.js"</span>;</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">import</span> { UniversalWeakMap } <span class="hljs-keyword">from</span> <span class="hljs-string">"./universal-weak-map.js"</span>;</pre></div></div>
             
         </li>
         
@@ -74,18 +70,15 @@
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-2">&#182;</a>
               </div>
-              <p>When called with any number of arguments, this function returns an
-object that inherits from tuple.prototype and is guaranteed to be ===
-any other tuple object that has exactly the same items. In computer
-science jargon, tuple objects are “internalized” or just “interned,”
-which allows for constant-time equality checking, and makes it possible
-for tuple objects to be used as Map keys, or stored in a Set.</p>
+              <p>See <a href="util.html"><code>util.js</code></a>.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">tuple</span>(<span class="hljs-params">...items</span>) </span>{
-  <span class="hljs-keyword">return</span> intern(items);
-}</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">import</span> {
+  brand,
+  globalKey,
+  forEachArrayMethod,
+} <span class="hljs-keyword">from</span> <span class="hljs-string">"./util.js"</span>;</pre></div></div>
             
         </li>
         
@@ -96,11 +89,19 @@ for tuple objects to be used as Map keys, or stored in a Set.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-3">&#182;</a>
               </div>
-              <p>Named imports work as well as default imports.</p>
+              <p>When called with any number of arguments, this function returns an
+object that inherits from <code>tuple.prototype</code> and is guaranteed to be
+<code>===</code> any other <code>tuple</code> object that has exactly the same items. In
+computer science jargon, tuple objects are “internalized” or just
+“interned,” which allows for constant-time equality checking, and makes
+it possible for tuple objects to be used as <code>Map</code> or <code>WeakMap</code> keys, or
+stored in a <code>Set</code>.</p>
 
             </div>
             
-            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">export</span> { tuple };</pre></div></div>
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">tuple</span>(<span class="hljs-params">...items</span>) </span>{
+  <span class="hljs-keyword">return</span> intern(items);
+}</pre></div></div>
             
         </li>
         
@@ -111,13 +112,28 @@ for tuple objects to be used as Map keys, or stored in a Set.</p>
               <div class="pilwrap ">
                 <a class="pilcrow" href="#section-4">&#182;</a>
               </div>
+              <p>Named imports work as well as <code>default</code> imports.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">export</span> { tuple };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
               <p>If this package is installed multiple times, there could be mutiple
-implementations of the tuple function with distinct tuple.prototype
+implementations of the tuple function with distinct <code>tuple.prototype</code>
 objects, but the shared pool of tuple objects must be the same across
-all implementations. While it would be ideal to use the global object,
-there’s no reliable way to get the global object across all JS
-environments without using the Function constructor, so instead we use
-the global Array constructor as a shared namespace.</p>
+all implementations. While it would be ideal to use the <code>global</code>
+object, there’s no reliable way to get the global object across all JS
+environments without using the <code>Function</code> constructor, so instead we
+use the global <code>Array</code> constructor as a shared namespace.</p>
 
             </div>
             
@@ -133,11 +149,11 @@ the global Array constructor as a shared namespace.</p>
         </li>
         
         
-        <li id="section-5">
+        <li id="section-6">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-5">&#182;</a>
+                <a class="pilcrow" href="#section-6">&#182;</a>
               </div>
               <p>Because we are building a tree of <em>weak</em> maps, the tree will not
 prevent objects in tuples from being garbage collected, since the
@@ -155,11 +171,11 @@ property is a key advantage of the <code>immutable-tuple</code> package.</p>
         </li>
         
         
-        <li id="section-6">
+        <li id="section-7">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-6">&#182;</a>
+                <a class="pilcrow" href="#section-7">&#182;</a>
               </div>
               <p>If a tuple object has already been created for exactly these items,
 return that object again.</p>
@@ -174,11 +190,11 @@ return that object again.</p>
         </li>
         
         
-        <li id="section-7">
+        <li id="section-8">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-7">&#182;</a>
+                <a class="pilcrow" href="#section-8">&#182;</a>
               </div>
               <p>Define immutable items with numeric indexes, and permanently fix the
 <code>.length</code> property.</p>
@@ -191,11 +207,11 @@ return that object again.</p>
         </li>
         
         
-        <li id="section-8">
+        <li id="section-9">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-8">&#182;</a>
+                <a class="pilcrow" href="#section-9">&#182;</a>
               </div>
               <p>Remember this new tuple object so that we can return the same object
 earlier next time.</p>
@@ -208,11 +224,11 @@ earlier next time.</p>
         </li>
         
         
-        <li id="section-9">
+        <li id="section-10">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-9">&#182;</a>
+                <a class="pilcrow" href="#section-10">&#182;</a>
               </div>
               <p>Convenient helper for defining hidden immutable properties.</p>
 
@@ -231,11 +247,11 @@ earlier next time.</p>
         </li>
         
         
-        <li id="section-10">
+        <li id="section-11">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-10">&#182;</a>
+                <a class="pilcrow" href="#section-11">&#182;</a>
               </div>
               <p>Since the <code>immutable-tuple</code> package could be installed multiple times
 in an application, there is no guarantee that the <code>tuple</code> constructor
@@ -263,11 +279,11 @@ tuple.isTuple = isTuple;
         </li>
         
         
-        <li id="section-11">
+        <li id="section-12">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-11">&#182;</a>
+                <a class="pilcrow" href="#section-12">&#182;</a>
               </div>
               <p>Copy all generic non-destructive Array methods to <code>tuple.prototype</code>.
 This works because (for example) <code>Array.prototype.slice</code> can be invoked
@@ -287,11 +303,11 @@ against any <code>Array</code>-like object.</p>
         </li>
         
         
-        <li id="section-12">
+        <li id="section-13">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-12">&#182;</a>
+                <a class="pilcrow" href="#section-13">&#182;</a>
               </div>
               <p>Of course, <code>tuple.prototype.slice</code> should return a <code>tuple</code> object,
 not a new <code>Array</code>.</p>
@@ -307,11 +323,11 @@ not a new <code>Array</code>.</p>
         </li>
         
         
-        <li id="section-13">
+        <li id="section-14">
             <div class="annotation">
               
               <div class="pilwrap ">
-                <a class="pilcrow" href="#section-13">&#182;</a>
+                <a class="pilcrow" href="#section-14">&#182;</a>
               </div>
               <p>Like <code>Array.prototype.concat</code>, except for the extra effort required to
 convert any tuple arguments to arrays, so that</p>

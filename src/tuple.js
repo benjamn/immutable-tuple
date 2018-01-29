@@ -1,4 +1,7 @@
+// See [`universal-weak-map.js`](universal-weak-map.html).
 import { UniversalWeakMap } from "./universal-weak-map.js";
+
+// See [`util.js`](util.html).
 import {
   brand,
   globalKey,
@@ -6,25 +9,26 @@ import {
 } from "./util.js";
 
 // When called with any number of arguments, this function returns an
-// object that inherits from tuple.prototype and is guaranteed to be ===
-// any other tuple object that has exactly the same items. In computer
-// science jargon, tuple objects are "internalized" or just "interned,"
-// which allows for constant-time equality checking, and makes it possible
-// for tuple objects to be used as Map keys, or stored in a Set.
+// object that inherits from `tuple.prototype` and is guaranteed to be
+// `===` any other `tuple` object that has exactly the same items. In
+// computer science jargon, tuple objects are "internalized" or just
+// "interned," which allows for constant-time equality checking, and makes
+// it possible for tuple objects to be used as `Map` or `WeakMap` keys, or
+// stored in a `Set`.
 export default function tuple(...items) {
   return intern(items);
 }
 
-// Named imports work as well as default imports.
+// Named imports work as well as `default` imports.
 export { tuple };
 
 // If this package is installed multiple times, there could be mutiple
-// implementations of the tuple function with distinct tuple.prototype
+// implementations of the tuple function with distinct `tuple.prototype`
 // objects, but the shared pool of tuple objects must be the same across
-// all implementations. While it would be ideal to use the global object,
-// there's no reliable way to get the global object across all JS
-// environments without using the Function constructor, so instead we use
-// the global Array constructor as a shared namespace.
+// all implementations. While it would be ideal to use the `global`
+// object, there's no reliable way to get the global object across all JS
+// environments without using the `Function` constructor, so instead we
+// use the global `Array` constructor as a shared namespace.
 const root = globalKey in Array
   ? Array[globalKey]
   : def(Array, globalKey, new UniversalWeakMap, false);

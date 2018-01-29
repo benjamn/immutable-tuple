@@ -1,6 +1,9 @@
 import { UniversalWeakMap } from "./universal-weak-map.js";
 import { brand } from "./util.js";
+
 const root = new UniversalWeakMap;
+const { concat } = Array.prototype;
+const reusableTempArray = [];
 
 export function tuple(...items) {
   return Tuple.intern(items);
@@ -36,6 +39,25 @@ export class Tuple {
 
   static isTuple(that) {
     return that[brand] === true;
+  }
+
+  // Turn this Tuple into an ordinary array, optionally reusing an
+  // existing array.
+  toArray(array = []) {
+    const { length } = this;
+    for (let i = 0; i < length; ++i) {
+      const item = this[i];
+      array[i] = Tuple.isTuple(item) ? item.toArray() : item;
+    }
+    array.length = length;
+    return array;
+  }
+
+  concat(...args) {
+    return Tuple.intern(concat.apply(
+      this.toArray(reusableTempArray),
+      args.map(item => Tuple.isTuple(item) ? item.toArray() : item)
+    ));
   }
 }
 

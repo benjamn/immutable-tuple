@@ -5,41 +5,38 @@ const root = new UniversalWeakMap;
 const { concat } = Array.prototype;
 const reusableTempArray = [];
 
-export function tuple(...items) {
-  return Tuple.intern(items);
+export default function tuple(...items) {
+  return intern(items);
 }
 
-export class Tuple {
-  constructor(...items) {
-    return Tuple.intern(items, this);
+// Make named imports work as well as default imports.
+export { tuple };
+
+function intern(array) {
+  let node = root;
+
+  array.forEach(item => {
+    node = node.get(item) || node.set(item, new UniversalWeakMap);
+  });
+
+  if (node.tuple) {
+    return node.tuple;
   }
 
-  static intern(array, tuple) {
-    let node = root;
+  const t = Object.create(tuple.prototype);
 
-    array.forEach(item => {
-      node = node.get(item) || node.set(item, new UniversalWeakMap);
-    });
+  array.forEach((item, i) => def(t, i, item, true));
+  def(t, "length", array.length, false);
 
-    if (node.tuple) {
-      return node.tuple;
-    }
+  return node.tuple = t;
+}
 
-    tuple = tuple || Object.create(Tuple.prototype);
+function isTuple(that) {
+  return that[brand] === true;
+}
 
-    array.forEach((item, i) => def(tuple, i, item, true));
-    def(tuple, "length", array.length, false);
-
-    return node.tuple = tuple;
-  }
-
-  static from(iterable) {
-    return Tuple.intern([...iterable]);
-  }
-
-  static isTuple(that) {
-    return that[brand] === true;
-  }
+Object.assign(tuple.prototype, {
+  isTuple,
 
   // Turn this Tuple into an ordinary array, optionally reusing an
   // existing array.
@@ -47,19 +44,19 @@ export class Tuple {
     const { length } = this;
     for (let i = 0; i < length; ++i) {
       const item = this[i];
-      array[i] = Tuple.isTuple(item) ? item.toArray() : item;
+      array[i] = isTuple(item) ? item.toArray() : item;
     }
     array.length = length;
     return array;
-  }
+  },
 
   concat(...args) {
-    return Tuple.intern(concat.apply(
+    return intern(concat.apply(
       this.toArray(reusableTempArray),
-      args.map(item => Tuple.isTuple(item) ? item.toArray() : item)
+      args.map(item => isTuple(item) ? item.toArray() : item)
     ));
   }
-}
+});
 
 function def(obj, name, value, enumerable) {
   Object.defineProperty(obj, name, {
@@ -70,7 +67,7 @@ function def(obj, name, value, enumerable) {
   });
 }
 
-def(Tuple.prototype, brand, true, false);
+def(tuple.prototype, brand, true, false);
 
 forEachArrayMethod((name, desc, mustConvertThisToArray) => {
   const method = desc && desc.value;
@@ -82,8 +79,8 @@ forEachArrayMethod((name, desc, mustConvertThisToArray) => {
           : this,
         args
       );
-      return Array.isArray(result) ? Tuple.intern(result) : result;
+      return Array.isArray(result) ? intern(result) : result;
     };
-    Object.defineProperty(Tuple.prototype, name, desc);
+    Object.defineProperty(tuple.prototype, name, desc);
   }
 });

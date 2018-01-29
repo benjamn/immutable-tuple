@@ -1,5 +1,5 @@
 import assert from "assert";
-import { tuple } from "../dist/tuple.js";
+import tuple from "../dist/tuple.js";
 
 it("includes", function () {
   const t = tuple(1, "asdf", true);

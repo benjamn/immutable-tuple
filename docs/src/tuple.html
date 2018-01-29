@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>tuple.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="../docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="tuple.html">
+                  src/tuple.js
+                </a>
+              
+                
+                <a class="source" href="universal-weak-map.html">
+                  src/universal-weak-map.js
+                </a>
+              
+                
+                <a class="source" href="util.html">
+                  src/util.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>tuple.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">import</span> { UniversalWeakMap } <span class="hljs-keyword">from</span> <span class="hljs-string">"./universal-weak-map.js"</span>;
+<span class="hljs-keyword">import</span> {
+  brand,
+  globalKey,
+  forEachArrayMethod,
+} <span class="hljs-keyword">from</span> <span class="hljs-string">"./util.js"</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>When called with any number of arguments, this function returns an
+object that inherits from tuple.prototype and is guaranteed to be ===
+any other tuple object that has exactly the same items. In computer
+science jargon, tuple objects are “internalized” or just “interned,”
+which allows for constant-time equality checking, and makes it possible
+for tuple objects to be used as Map keys, or stored in a Set.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">export</span> <span class="hljs-keyword">default</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">tuple</span>(<span class="hljs-params">...items</span>) </span>{
+  <span class="hljs-keyword">return</span> intern(items);
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Named imports work as well as default imports.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">export</span> { tuple };</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>If this package is installed multiple times, there could be mutiple
+implementations of the tuple function with distinct tuple.prototype
+objects, but the shared pool of tuple objects must be the same across
+all implementations. While it would be ideal to use the global object,
+there’s no reliable way to get the global object across all JS
+environments without using the Function constructor, so instead we use
+the global Array constructor as a shared namespace.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">const</span> root = globalKey <span class="hljs-keyword">in</span> <span class="hljs-built_in">Array</span>
+  ? <span class="hljs-built_in">Array</span>[globalKey]
+  : def(<span class="hljs-built_in">Array</span>, globalKey, <span class="hljs-keyword">new</span> UniversalWeakMap, <span class="hljs-literal">false</span>);
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">intern</span>(<span class="hljs-params">array</span>) </span>{
+  <span class="hljs-keyword">let</span> node = root;
+
+  array.forEach(<span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Because we are building a tree of <em>weak</em> maps, the tree will not
+prevent objects in tuples from being garbage collected, since the
+tree itself will be pruned over time when the corresponding tuple
+objects become unreachable. In addition to internalization, this
+property is a key advantage of the <code>immutable-tuple</code> package.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    node = node.get(item) || node.set(item, <span class="hljs-keyword">new</span> UniversalWeakMap);
+  });
+
+  <span class="hljs-keyword">if</span> (node.tuple) {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>If a tuple object has already been created for exactly these items,
+return that object again.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">return</span> node.tuple;
+  }
+
+  <span class="hljs-keyword">const</span> t = <span class="hljs-built_in">Object</span>.create(tuple.prototype);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Define immutable items with numeric indexes, and permanently fix the
+<code>.length</code> property.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  array.forEach(<span class="hljs-function">(<span class="hljs-params">item, i</span>) =&gt;</span> def(t, i, item, <span class="hljs-literal">true</span>));
+  def(t, <span class="hljs-string">"length"</span>, array.length, <span class="hljs-literal">false</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Remember this new tuple object so that we can return the same object
+earlier next time.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>  <span class="hljs-keyword">return</span> node.tuple = t;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Convenient helper for defining hidden immutable properties.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">def</span>(<span class="hljs-params">obj, name, value, enumerable</span>) </span>{
+  <span class="hljs-built_in">Object</span>.defineProperty(obj, name, {
+    <span class="hljs-attr">value</span>: value,
+    <span class="hljs-attr">enumerable</span>: !! enumerable,
+    <span class="hljs-attr">writable</span>: <span class="hljs-literal">false</span>,
+    <span class="hljs-attr">configurable</span>: <span class="hljs-literal">false</span>
+  });
+  <span class="hljs-keyword">return</span> value;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Since the <code>immutable-tuple</code> package could be installed multiple times
+in an application, there is no guarantee that the <code>tuple</code> constructor
+or <code>tuple.prototype</code> will be unique, so <code>value instanceof tuple</code> is
+unreliable. Instead, to test if a value is a tuple, you should use
+<code>tuple.isTuple(value)</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">isTuple</span>(<span class="hljs-params">that</span>) </span>{
+  <span class="hljs-keyword">return</span> !! (that &amp;&amp; that[brand] === <span class="hljs-literal">true</span>);
+}
+
+def(tuple.prototype, brand, <span class="hljs-literal">true</span>, <span class="hljs-literal">false</span>);
+
+tuple.isTuple = isTuple;
+
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">toArray</span>(<span class="hljs-params">tuple</span>) </span>{
+  <span class="hljs-keyword">const</span> array = [];
+  <span class="hljs-keyword">let</span> i = tuple.length;
+  <span class="hljs-keyword">while</span> (i--) array[i] = tuple[i];
+  <span class="hljs-keyword">return</span> array;
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Copy all generic non-destructive Array methods to <code>tuple.prototype</code>.
+This works because (for example) <code>Array.prototype.slice</code> can be invoked
+against any <code>Array</code>-like object.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>forEachArrayMethod(<span class="hljs-function">(<span class="hljs-params">name, desc, mustConvertThisToArray</span>) =&gt;</span> {
+  <span class="hljs-keyword">const</span> method = desc &amp;&amp; desc.value;
+  <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> method === <span class="hljs-string">"function"</span>) {
+    desc.value = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">...args</span>) </span>{
+      <span class="hljs-keyword">const</span> result = method.apply(
+        mustConvertThisToArray ? toArray(<span class="hljs-keyword">this</span>) : <span class="hljs-keyword">this</span>,
+        args
+      );</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Of course, <code>tuple.prototype.slice</code> should return a <code>tuple</code> object,
+not a new <code>Array</code>.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">return</span> <span class="hljs-built_in">Array</span>.isArray(result) ? intern(result) : result;
+    };
+    <span class="hljs-built_in">Object</span>.defineProperty(tuple.prototype, name, desc);
+  }
+});</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Like <code>Array.prototype.concat</code>, except for the extra effort required to
+convert any tuple arguments to arrays, so that</p>
+<pre><code>tuple(<span class="hljs-number">1</span>).concat(tuple(<span class="hljs-number">2</span>), <span class="hljs-number">3</span>) === tuple(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>)
+</code></pre>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">const</span> { concat } = <span class="hljs-built_in">Array</span>.prototype;
+tuple.prototype.concat = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">...args</span>) </span>{
+  <span class="hljs-keyword">return</span> intern(concat.apply(toArray(<span class="hljs-keyword">this</span>), args.map(
+    <span class="hljs-function"><span class="hljs-params">item</span> =&gt;</span> isTuple(item) ? toArray(item) : item
+  )));
+};</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>util.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="../docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="tuple.html">
+                  src/tuple.js
+                </a>
+              
+                
+                <a class="source" href="universal-weak-map.html">
+                  src/universal-weak-map.js
+                </a>
+              
+                
+                <a class="source" href="util.html">
+                  src/util.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>util.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">const</span> useSymbol = <span class="hljs-keyword">typeof</span> <span class="hljs-built_in">Symbol</span> === <span class="hljs-string">"function"</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> brand = useSymbol
+  ? <span class="hljs-built_in">Symbol</span>.for(<span class="hljs-string">"immutable-tuple"</span>)
+  : <span class="hljs-string">"@@__IMMUTABLE_TUPLE__@@"</span>;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> globalKey = useSymbol
+  ? <span class="hljs-built_in">Symbol</span>.for(<span class="hljs-string">"immutable-tuple-root"</span>)
+  : <span class="hljs-string">"@@__IMMUTABLE_TUPLE_ROOT__@@"</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>The mustConvertThisToArray value is true if the corresponding Array
+method will not attempt to modify <code>this</code>, which means we can pass a
+Tuple object as <code>this</code> without first converting it to an Array.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">export</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">forEachArrayMethod</span>(<span class="hljs-params">fn</span>) </span>{
+  <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">call</span>(<span class="hljs-params">name, mustConvertThisToArray</span>) </span>{
+    <span class="hljs-keyword">const</span> desc = <span class="hljs-built_in">Object</span>.getOwnPropertyDescriptor(<span class="hljs-built_in">Array</span>.prototype, name);
+    fn(name, desc, !! mustConvertThisToArray);
+  }
+  call(<span class="hljs-string">"slice"</span>);
+  call(<span class="hljs-string">"includes"</span>);
+  call(<span class="hljs-string">"indexOf"</span>);
+  call(<span class="hljs-string">"forEach"</span>);
+  call(<span class="hljs-string">"filter"</span>);
+  call(<span class="hljs-string">"map"</span>);
+  call(<span class="hljs-string">"every"</span>);
+  call(<span class="hljs-string">"some"</span>);
+  call(<span class="hljs-string">"reduce"</span>);
+  call(<span class="hljs-string">"reduceRight"</span>);
+  call(<span class="hljs-string">"toString"</span>);
+  call(<span class="hljs-string">"toLocaleString"</span>);
+  call(<span class="hljs-string">"join"</span>);
+  call(<span class="hljs-string">"reverse"</span>, <span class="hljs-literal">true</span>);
+  call(<span class="hljs-string">"sort"</span>, <span class="hljs-literal">true</span>);
+  call(<span class="hljs-string">"lastIndexOf"</span>);
+  call(<span class="hljs-string">"find"</span>);
+  call(<span class="hljs-string">"findIndex"</span>);
+  call(useSymbol &amp;&amp; <span class="hljs-built_in">Symbol</span>.iterator || <span class="hljs-string">"@@iterator"</span>);
+}</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

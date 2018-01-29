@@ -38,6 +38,7 @@
     "weakmap"
   ],
   "devDependencies": {
+    "docco": "^0.8.0",
     "mocha": "^5.0.0",
     "reify": "^0.13.7",
     "rollup": "^0.55.1",

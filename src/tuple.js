@@ -41,10 +41,10 @@ function def(obj, name, value, enumerable) {
 }
 
 function isTuple(that) {
-  return that[brand] === true;
+  return !! (that && that[brand] === true);
 }
 
-tuple.prototype.isTuple = isTuple;
+tuple.isTuple = isTuple;
 
 // Turn this Tuple into an ordinary array, optionally reusing an
 // existing array.

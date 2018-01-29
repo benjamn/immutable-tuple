@@ -11,6 +11,13 @@ describe("tuple basics", function () {
   it("should support === deep equality", function () {
     assert.strictEqual(tuple(1,2,3), tuple(1,2,3));
   });
+
+  it("should support tuple.isTuple", function () {
+    assert.strictEqual(tuple.isTuple(tuple()), true);
+    assert.strictEqual(tuple.isTuple(tuple.prototype), true);
+    assert.strictEqual(tuple.isTuple(tuple("asdf", {})), true);
+    assert.strictEqual(tuple.isTuple(null), false);
+  });
 });
 
 describe("Array methods", function () {

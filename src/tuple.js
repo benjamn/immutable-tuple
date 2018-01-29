@@ -31,33 +31,6 @@ function intern(array) {
   return node.tuple = t;
 }
 
-function isTuple(that) {
-  return that[brand] === true;
-}
-
-Object.assign(tuple.prototype, {
-  isTuple,
-
-  // Turn this Tuple into an ordinary array, optionally reusing an
-  // existing array.
-  toArray(array = []) {
-    const { length } = this;
-    for (let i = 0; i < length; ++i) {
-      const item = this[i];
-      array[i] = isTuple(item) ? item.toArray() : item;
-    }
-    array.length = length;
-    return array;
-  },
-
-  concat(...args) {
-    return intern(concat.apply(
-      this.toArray(reusableTempArray),
-      args.map(item => isTuple(item) ? item.toArray() : item)
-    ));
-  }
-});
-
 function def(obj, name, value, enumerable) {
   Object.defineProperty(obj, name, {
     value: value,
@@ -66,6 +39,34 @@ function def(obj, name, value, enumerable) {
     configurable: false
   });
 }
+
+function isTuple(that) {
+  return that[brand] === true;
+}
+
+tuple.prototype.isTuple = isTuple;
+
+// Turn this Tuple into an ordinary array, optionally reusing an
+// existing array.
+tuple.prototype.toArray = function (array = []) {
+  const { length } = this;
+  for (let i = 0; i < length; ++i) {
+    const item = this[i];
+    array[i] = isTuple(item) ? item.toArray() : item;
+  }
+  array.length = length;
+  return array;
+};
+
+// Like Array.prototype.concat, except that extra effort is required to
+// convert any tuple arguments to arrays, so that Array.prototype.concat
+// will do the right thing.
+tuple.prototype.concat = function (...args) {
+  return intern(concat.apply(
+    this.toArray(reusableTempArray),
+    args.map(item => isTuple(item) ? item.toArray() : item)
+  ));
+};
 
 def(tuple.prototype, brand, true, false);
 

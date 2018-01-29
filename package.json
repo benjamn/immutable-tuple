@@ -1,0 +1,45 @@
+{
+  "name": "immutable-tuple",
+  "version": "0.1.0",
+  "description": "Immutable finite list objects with constant-time deep equality testing (===) and no memory leaks",
+  "license": "MIT",
+  "author": {
+    "name": "Ben Newman",
+    "email": "ben@benjamn.com",
+    "url": "https://github.com/benjamn"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/benjamn/immutable-tuple.git"
+  },
+  "homepage": "https://github.com/benjamn/immutable-tuple#readme",
+  "bugs": {
+    "url": "https://github.com/benjamn/immutable-tuple/issues"
+  },
+  "main": "dist/tuple.js",
+  "module": "dist/tuple.es.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepublish": "./scripts/build.sh"
+  },
+  "keywords": [
+    "immutable",
+    "tuple",
+    "sequence",
+    "persistent",
+    "data",
+    "data structure",
+    "functional",
+    "intern",
+    "interned",
+    "internalized",
+    "memoization",
+    "deep equality",
+    "weakmap"
+  ],
+  "devDependencies": {
+    "rollup": "^0.55.1",
+    "rollup-plugin-buble": "^0.18.0",
+    "rollup-plugin-uglify": "^3.0.0"
+  }
+}

@@ -118,7 +118,7 @@ assert.strictEqual(obj.asdf, "oyez");
 
 Any data structure that guarantees `===` equality based on structural equality must maintain some sort of internal pool of previously encountered instances.
 
-Implementing such a pool of `tuple`s is fairly straightforward (though feel free to give it some thought before reading this code, if you like figuring things out for yourself):
+Implementing such a pool for `tuple`s is fairly straightforward (though feel free to give it some thought before reading this code, if you like figuring things out for yourself):
 
 ```js
 const pool = new Map;
@@ -146,9 +146,7 @@ This implementation is pretty good, because it requires only linear time (_O_(`i
 
 However, this simple implementation has a serious problem: in a garbage-collected language like JavaScript, the `pool` itself will retain references to all `tuple` objects ever created, which prevents `tuple` objects and their elements (which may be very large objects) from ever being reclaimed by the garbage collector, even after they become unreachable by any other means. In other words, storing objects in this kind of `tuple` would inevitably cause **memory leaks**.
 
-Another slightly less serious problem: this implementation eagerly creates (and permanently retains) an extra empty `Map` object for every `tuple` added to the `pool`, just in case another `tuple` needs to be created with exactly the same prefix (which might not ever happen).
-
-To solve these problems, it's tempting to try changing `Map` to `WeakMap` here:
+To solve this problem, it's tempting to try changing `Map` to [`WeakMap`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap) here:
 
 ```js
 const pool = new WeakMap;
@@ -160,8 +158,8 @@ and here:
 if (!child) node.set(item, child = new WeakMap);
 ```
 
-This approach is appealing because a [`WeakMap`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap) does not prevent its keys from being reclaimed by the garbage collector. Once a `tuple` becomes unreachable, its elements are free to disappear from the tree of `WeakMap`s whenever they too become unreachable. In other words, something like a `WeakMap` is exactly what we need.
+This approach is appealing because a `WeakMap` should allow its keys to be reclaimed by the garbage collector. That's the whole point of a `WeakMap`, after all. Once a `tuple` becomes unreachable because the program has stopped using it anywhere else, its elements are free to disappear from the pool of `WeakMap`s whenever they too become unreachable. In other words, something like a `WeakMap` is exactly what we need here.
 
-However, this strategy fails because `tuple`s can contain primitive values as well as object references, whereas a `WeakMap` only allows keys that are object references. To see how the `immutable-tuple` library gets around this limitation of `WeakMap`s, have a look at [this module](https://github.com/benjamn/immutable-tuple/blob/master/src/universal-weak-map.js).
+Unfortunately, this strategy stumbles because a `tuple` can contain primitive values as well as object references, whereas a `WeakMap` only allows keys that are object references. In other words, `node.set(item, ...)` would fail whenever `item` is not an object, if `node` is a `WeakMap`. To see how the `immutable-tuple` library gets around this `WeakMap` limitation, have a look at [this module](https://github.com/benjamn/immutable-tuple/blob/master/src/universal-weak-map.js).
 
 Astute readers may object that some bookkeeping data remains in memory when you create `tuple` objects with prefixes of primitive values, but the important thing is that no user-defined objects are kept alive by the `pool`. That said, if you have any ideas for reclaiming chains of `._strongMap` data, please [open an issue](https://github.com/benjamn/immutable-tuple/issues/new) or [submit a pull request](https://github.com/benjamn/immutable-tuple/pulls)!

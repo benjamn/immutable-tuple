@@ -21,7 +21,7 @@ npm test # if skeptical
 
 ## Usage
 
-The npm package exports a single function called `tuple`, both as a `default` export and as an equivalent named export, so all of the following import styles will work:
+This package exports a single function called `tuple`, both as a `default` export and as an equivalent named export, so all of the following import styles will work:
 
 ```js
 import tuple from "immutable-tuple";
@@ -44,6 +44,8 @@ const t2 = tuple(1, "asdf", obj);
 assert.strictEqual(t1 === t2, true);
 assert.strictEqual(t1, t2);
 ```
+
+Although the `tuple` function can be invoked using `new tuple(...)` syntax, using `new` is not recommended, since the new object will simply be thrown away.
 
 ### Own `tuple` properties
 

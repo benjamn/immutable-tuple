@@ -114,7 +114,11 @@ tuple(1, "asdf", obj)[2].asdf = "oyez";
 assert.strictEqual(obj.asdf, "oyez");
 ```
 
-## Garbage collection
+## How it works
+
+Thanks to [Docco](http://ashkenas.com/docco/), you can read my implementation comments side-by-side with the actual code by visiting [the GitHub pages site](https://benjamn.github.io/immutable-tuple/) for this repository.
+
+### Garbage collection
 
 Any data structure that guarantees `===` equality based on structural equality must maintain some sort of internal pool of previously encountered instances.
 

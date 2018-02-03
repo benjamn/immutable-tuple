@@ -2,7 +2,7 @@
 
 Immutable finite list objects with constant-time equality testing (`===`) and no memory leaks.
 
-## Usage
+## Installation
 
 First install the package from npm:
 
@@ -18,6 +18,8 @@ cd immutable-tuple
 npm install
 npm test # if skeptical
 ```
+
+## Usage
 
 The npm package exports a single function called `tuple`, both as a `default` export and as an equivalent named export, so all of the following import styles will work:
 
@@ -64,6 +66,8 @@ assert.strictEqual(
 );
 ```
 
+However, because tuples are immutable and always distinct from any of their arguments, it is not possible for a `tuple` to contain itself, nor to contain another `tuple` that contains the original `tuple`, and so forth.
+
 Since `tuple` objects are identical when (and only when) their elements are identical, any two tuples can be compared for equality in constant time, regardless of how many elements they contain.
 
 This behavior also makes `tuple` objects useful as keys in a `Map`, or elements in a `Set`, without any extra hashing or equality logic:
@@ -109,3 +113,55 @@ const obj = { asdf: 1234 };
 tuple(1, "asdf", obj)[2].asdf = "oyez";
 assert.strictEqual(obj.asdf, "oyez");
 ```
+
+## Memory usage
+
+Any data structure that guarantees `===` equality based on structural equality must maintain some sort of internal pool of previously encountered instances.
+
+Implementing such a pool of `tuple`s is fairly straightforward (though feel free to give it some thought before reading this code, if you like figuring things out for yourself):
+
+```js
+const pool = new Map;
+
+function tuple(...items) {
+  let node = pool; 
+
+  items.forEach(item => {
+    let child = node.get(item);
+    if (!child) node.set(item, child = new Map);
+    node = child;
+  });
+
+  // If we've created a tuple instance for this sequence of elements before,
+  // return that instance again. Otherwise create a new immutable tuple instance
+  // with the same (frozen) elements as the items array.
+  return node.tuple || (node.tuple = Object.create(
+    tuple.prototype,
+    Object.getOwnPropertyDescriptors(Object.freeze(items))
+  ));
+}
+```
+
+This implementation is pretty good, because it requires only linear time (_O_(`items.length`)) to determine if a `tuple` has been created previously for the given `items`, and you can't do better than linear time (asymptotically speaking) because you have to look at all the items. This code is also useful as an illustration of exactly how the `tuple` constructor behaves, in case you weren't satisfied by my examples in the previous section.
+
+However, this simple implementation has a serious problem: in a garbage-collected language like JavaScript, the `pool` itself will retain references to all `tuple` objects ever created, which prevents `tuple` objects and their elements (which may be very large objects) from ever being reclaimed by the garbage collector, even after they become unreachable by any other means. In other words, storing objects in this kind of `tuple` would inevitably cause **memory leaks**.
+
+Another slightly less serious problem: this implementation eagerly creates (and permanently retains) an extra empty `Map` object for every `tuple` added to the `pool`, just in case another `tuple` needs to be created with exactly the same prefix (which might not ever happen).
+
+To solve these problems, it's tempting to try changing `Map` to `WeakMap` here:
+
+```js
+const pool = new WeakMap;
+```
+
+and here:
+
+```js
+if (!child) node.set(item, child = new WeakMap);
+```
+
+This approach is appealing because a [`WeakMap`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/WeakMap) does not prevent its keys from being reclaimed by the garbage collector. Once a `tuple` becomes unreachable, its elements are free to disappear from the tree of `WeakMap`s whenever they too become unreachable. In other words, something like a `WeakMap` is exactly what we need.
+
+However, this strategy fails because `tuple`s can contain primitive values as well as object references, whereas a `WeakMap` only allows keys that are object references. To see how the `immutable-tuple` library gets around this limitation of `WeakMap`s, have a look at [this module](https://github.com/benjamn/immutable-tuple/blob/master/src/universal-weak-map.js).
+
+Astute readers may object that some bookkeeping data remains in memory when you create `tuple` objects with prefixes of primitive values, but the important thing is that no user-defined objects are kept alive by the `pool`. That said, if you have any ideas for reclaiming chains of `._strongMap` data, please [open an issue](https://github.com/benjamn/immutable-tuple/issues/new) or [submit a pull request](https://github.com/benjamn/immutable-tuple/pulls)!

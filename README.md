@@ -26,37 +26,71 @@ import tuple from "immutable-tuple";
 import { tuple } from "immutable-tuple";
 const { tuple } = require("immutable-tuple");
 const tuple = require("immutable-tuple").tuple;
-
-// Note that this style will *not* work:
-const tuple = require("immutable-tuple");
 ```
 
-The `tuple` function takes any number of arguments, and returns a unique, immutable object that inherits from `tuple.prototype` and is guaranteed to be `===` any other `tuple` object created from the same sequence of arguments:
+The `tuple` function takes any number of arguments and returns a unique, immutable object that inherits from `tuple.prototype` and is guaranteed to be `===` any other `tuple` object created from the same sequence of arguments:
 
 ```js
+import assert from "assert";
+
 const obj = { asdf: 1234 };
 const t1 = tuple(1, "asdf", obj);
 const t2 = tuple(1, "asdf", obj);
-assert(t1 === t2);
 
-assert.strictEqual(
-  tuple(t1, t2),
-  tuple(t2, t1)
-);
+assert.strictEqual(t1 === t2, true);
+assert.strictEqual(t1, t2);
 ```
-
-Because `tuple` objects are identical when (and only when) their elements are identical, any two tuples can be compared for equality in constant time, regardless of how many elements they contain.
 
 The `tuple` object has a fixed numeric `.length` property, and its elements may be accessed using array index notation:
 
 ```js
 assert.strictEqual(t1.length, 3);
-t1.forEach((x, i) => assert.strictEqual(x, t2[i]));
+t1.forEach((x, i) => {
+  assert.strictEqual(x, t2[i]);
+});
 ```
 
-Every non-destructive method of `Array.prototype` is also supported by `tuple.prototype`, including `sort` and `reverse`, which return a modified copy of the `tuple` without altering the original:
+Since `tuple` objects are just another kind of JavaScript object, naturally `tuple`s can contain other `tuple`s:
 
 ```js
+assert.strictEqual(
+  tuple(t1, t2),
+  tuple(t2, t1)
+);
+
+assert.strictEqual(
+  tuple(1, t2, 3)[1][2],
+  obj
+);
+```
+
+Since `tuple` objects are identical when (and only when) their elements are identical, any two tuples can be compared for equality in constant time, regardless of how many elements they contain.
+
+This behavior also makes `tuple` objects useful as keys in a `Map`, or elements in a `Set`, without any extra hashing or equality logic:
+
+```js
+const map = new Map;
+
+map.set(tuple(1, 12, 3), {
+  author: tuple("Ben", "Newman"),
+  releaseDate: Date.now()
+});
+
+const version = "1.12.3";
+const info = map.get(tuple(...version.split(".").map(Number)));
+if (info) {
+  console.log(info.author[1]); // "Newman"
+}
+```
+
+Every non-destructive method of `Array.prototype` is supported by `tuple.prototype`, including `sort` and `reverse`, which return a modified copy of the `tuple` without altering the original:
+
+```js
+assert.strictEqual(
+  tuple("a", "b", "c").slice(1, -1),
+  tuple("b")
+);
+
 assert.strictEqual(
   tuple(6, 2, 8, 1, 3, 0).sort(),
   tuple(0, 1, 2, 3, 6, 8)
@@ -68,7 +102,7 @@ assert.strictEqual(
 );
 ```
 
-While the identity, number, and order of elements in the `tuple` is fixed, please note that the contents of the individual elements are not frozen in any way:
+While the identity, number, and order of elements in a `tuple` is fixed, please note that the contents of the individual elements are not frozen in any way:
 
 ```js
 const obj = { asdf: 1234 };

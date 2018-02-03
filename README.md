@@ -114,7 +114,7 @@ tuple(1, "asdf", obj)[2].asdf = "oyez";
 assert.strictEqual(obj.asdf, "oyez");
 ```
 
-## Memory usage
+## Garbage collection
 
 Any data structure that guarantees `===` equality based on structural equality must maintain some sort of internal pool of previously encountered instances.
 

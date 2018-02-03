@@ -49,10 +49,11 @@ Although the `tuple` function can be invoked using `new tuple(...)` syntax, usin
 
 ### Own `tuple` properties
 
-The `tuple` object has a fixed numeric `.length` property, and its elements may be accessed using array index notation:
+The `tuple` object has a fixed numeric `length` property, and its elements may be accessed using array index notation:
 
 ```js
 assert.strictEqual(t1.length, 3);
+
 t1.forEach((x, i) => {
   assert.strictEqual(x, t2[i]);
 });

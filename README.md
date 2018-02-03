@@ -30,6 +30,8 @@ const { tuple } = require("immutable-tuple");
 const tuple = require("immutable-tuple").tuple;
 ```
 
+### Constructing `tuple`s
+
 The `tuple` function takes any number of arguments and returns a unique, immutable object that inherits from `tuple.prototype` and is guaranteed to be `===` any other `tuple` object created from the same sequence of arguments:
 
 ```js
@@ -43,6 +45,8 @@ assert.strictEqual(t1 === t2, true);
 assert.strictEqual(t1, t2);
 ```
 
+### Own `tuple` properties
+
 The `tuple` object has a fixed numeric `.length` property, and its elements may be accessed using array index notation:
 
 ```js
@@ -51,6 +55,8 @@ t1.forEach((x, i) => {
   assert.strictEqual(x, t2[i]);
 });
 ```
+
+### Nested `tuple`s
 
 Since `tuple` objects are just another kind of JavaScript object, naturally `tuple`s can contain other `tuple`s:
 
@@ -67,6 +73,8 @@ assert.strictEqual(
 ```
 
 However, because tuples are immutable and always distinct from any of their arguments, it is not possible for a `tuple` to contain itself, nor to contain another `tuple` that contains the original `tuple`, and so forth.
+
+### Constant time `===` equality
 
 Since `tuple` objects are identical when (and only when) their elements are identical, any two tuples can be compared for equality in constant time, regardless of how many elements they contain.
 
@@ -87,6 +95,8 @@ if (info) {
 }
 ```
 
+### `Array` methods
+
 Every non-destructive method of `Array.prototype` is supported by `tuple.prototype`, including `sort` and `reverse`, which return a modified copy of the `tuple` without altering the original:
 
 ```js
@@ -106,6 +116,8 @@ assert.strictEqual(
 );
 ```
 
+### Shallow immutability
+
 While the identity, number, and order of elements in a `tuple` is fixed, please note that the contents of the individual elements are not frozen in any way:
 
 ```js
@@ -114,11 +126,41 @@ tuple(1, "asdf", obj)[2].asdf = "oyez";
 assert.strictEqual(obj.asdf, "oyez");
 ```
 
-## How it works
+### Iterability
+
+Every `tuple` object is array-like and iterable, so `...` spreading and destructuring work as they should:
+
+```js
+func(...tuple(a, b));
+func.apply(this, tuple(c, d, e));
+
+assert.deepEqual(
+  [1, ...tuple(2, 3), 4],
+  [1, 2, 3, 4]
+);
+
+assert.strictEqual(
+  tuple(1, ...tuple(2, 3), 4),
+  tuple(1, 2, 3, 4)
+);
+
+const [a, [_, b]] = tuple(1, tuple(2, 3), 4);
+assert.strictEqual(a, 1);
+assert.strictEqual(b, 3);
+```
+
+### `tuple.isTuple(value)`
+
+Since the `immutable-tuple` package could be installed multiple times in an application, there is no guarantee that the `tuple` constructor or `tuple.prototype` will be unique, so `value instanceof tuple` is unreliable. Instead, to test if a value is a `tuple`, you should use `tuple.isTuple(value)`.
+
+Fortunately, even if your application uses multiple different `tuple` constructors from different copies of this library, the resulting `tuple` instances will still be `===` each other when their elements are the same. This is especially convenient given that this library provides both a CommonJS bundle and an ECMAScript module bundle, and some module systems might accidentally load those bundles simultaneously.
+
+
+## Implementation details
 
 Thanks to [Docco](http://ashkenas.com/docco/), you can read my implementation comments side-by-side with the actual code by visiting [the GitHub pages site](https://benjamn.github.io/immutable-tuple/) for this repository.
 
-### Garbage collection
+### Instance pooling (internalization)
 
 Any data structure that guarantees `===` equality based on structural equality must maintain some sort of internal pool of previously encountered instances.
 
@@ -147,6 +189,8 @@ function tuple(...items) {
 ```
 
 This implementation is pretty good, because it requires only linear time (_O_(`items.length`)) to determine if a `tuple` has been created previously for the given `items`, and you can't do better than linear time (asymptotically speaking) because you have to look at all the items. This code is also useful as an illustration of exactly how the `tuple` constructor behaves, in case you weren't satisfied by my examples in the previous section.
+
+### Garbage collection
 
 However, this simple implementation has a serious problem: in a garbage-collected language like JavaScript, the `pool` itself will retain references to all `tuple` objects ever created, which prevents `tuple` objects and their elements (which may be very large objects) from ever being reclaimed by the garbage collector, even after they become unreachable by any other means. In other words, storing objects in this kind of `tuple` would inevitably cause **memory leaks**.
 

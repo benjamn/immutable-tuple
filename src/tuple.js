@@ -29,9 +29,7 @@ export { tuple };
 // object, there's no reliable way to get the global object across all JS
 // environments without using the `Function` constructor, so instead we
 // use the global `Array` constructor as a shared namespace.
-const root = globalKey in Array && Array[globalKey]
-  ? Array[globalKey]
-  : def(Array, globalKey, new UniversalWeakMap, false);
+const root = Array[globalKey] || def(Array, globalKey, new UniversalWeakMap, false);
 
 function intern(array) {
   let node = root;

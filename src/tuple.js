@@ -8,20 +8,6 @@ import {
   forEachArrayMethod,
 } from "./util.js";
 
-// When called with any number of arguments, this function returns an
-// object that inherits from `tuple.prototype` and is guaranteed to be
-// `===` any other `tuple` object that has exactly the same items. In
-// computer science jargon, `tuple` instances are "internalized" or just
-// "interned," which allows for constant-time equality checking, and makes
-// it possible for tuple objects to be used as `Map` or `WeakMap` keys, or
-// stored in a `Set`.
-export default function tuple(...items) {
-  return intern(items);
-}
-
-// Named imports work as well as `default` imports.
-export { tuple };
-
 // If this package is installed multiple times, there could be mutiple
 // implementations of the `tuple` function with distinct `tuple.prototype`
 // objects, but the shared pool of `tuple` objects must be the same across
@@ -31,7 +17,14 @@ export { tuple };
 // use the global `Array` constructor as a shared namespace.
 const root = Array[globalKey] || def(Array, globalKey, new UniversalWeakMap, false);
 
-function intern(array) {
+// When called with any number of arguments, this function returns an
+// object that inherits from `tuple.prototype` and is guaranteed to be
+// `===` any other `tuple` object that has exactly the same items. In
+// computer science jargon, `tuple` instances are "internalized" or just
+// "interned," which allows for constant-time equality checking, and makes
+// it possible for tuple objects to be used as `Map` or `WeakMap` keys, or
+// stored in a `Set`.
+export default function tuple() {
   let node = root;
 
   // Because we are building a tree of *weak* maps, the tree will not
@@ -39,9 +32,11 @@ function intern(array) {
   // tree itself will be pruned over time when the corresponding `tuple`
   // objects become unreachable. In addition to internalization, this
   // property is a key advantage of the `immutable-tuple` package.
-  array.forEach(item => {
+  const argc = arguments.length;
+  for (let i = 0; i < argc; ++i) {
+    const item = arguments[i];
     node = node.get(item) || node.set(item, new UniversalWeakMap);
-  });
+  }
 
   // If a `tuple` object has already been created for exactly these items,
   // return that object again.
@@ -53,13 +48,18 @@ function intern(array) {
 
   // Define immutable items with numeric indexes, and permanently fix the
   // `.length` property.
-  array.forEach((item, i) => def(t, i, item, true));
-  def(t, "length", array.length, false);
+  for (let i = 0; i < argc; ++i) {
+    def(t, i, arguments[i], true);
+  }
+  def(t, "length", argc, false);
 
   // Remember this new `tuple` object so that we can return the same object
   // earlier next time.
   return node.tuple = t;
 }
+
+// Named imports work as well as `default` imports.
+export { tuple };
 
 // Convenient helper for defining hidden immutable properties.
 function def(obj, name, value, enumerable) {
@@ -105,7 +105,7 @@ forEachArrayMethod((name, desc, mustConvertThisToArray) => {
       );
       // Of course, `tuple.prototype.slice` should return a `tuple` object,
       // not a new `Array`.
-      return Array.isArray(result) ? intern(result) : result;
+      return Array.isArray(result) ? tuple(...result) : result;
     };
     Object.defineProperty(tuple.prototype, name, desc);
   }
@@ -118,7 +118,7 @@ forEachArrayMethod((name, desc, mustConvertThisToArray) => {
 // ```
 const { concat } = Array.prototype;
 tuple.prototype.concat = function (...args) {
-  return intern(concat.apply(toArray(this), args.map(
+  return tuple(...concat.apply(toArray(this), args.map(
     item => isTuple(item) ? toArray(item) : item
   )));
 };

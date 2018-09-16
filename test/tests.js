@@ -226,4 +226,16 @@ describe("performance", function () {
       assert.deepEqual(tuple.apply(null, elems), elems);
     }
   });
+
+  it("can handle a lot of objects", function () {
+    for (var i = 0; i < tupleCount; ++i) {
+      const elems = [];
+      for (var j = 0; j < elemCount; ++j) {
+        elems.push({});
+      }
+      tuple.apply(null, elems).forEach(function (elem, i) {
+        assert.strictEqual(elem, elems[i]);
+      });
+    }
+  });
 });

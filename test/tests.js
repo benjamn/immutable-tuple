@@ -211,3 +211,19 @@ describe("Array methods", function () {
     require("./modern.js");
   }
 });
+
+describe("performance", function () {
+  this.timeout(10000);
+  const tupleCount = 100000;
+  const elemCount = 10;
+
+  it("can handle a lot of strings", function () {
+    for (var i = 0; i < tupleCount; ++i) {
+      const elems = [];
+      for (var j = 0; j < elemCount; ++j) {
+        elems.push(Math.random().toString(36).slice(2));
+      }
+      assert.deepEqual(tuple.apply(null, elems), elems);
+    }
+  });
+});

@@ -44,18 +44,24 @@ export default function tuple() {
     return node.tuple;
   }
 
-  const t = Object.create(tuple.prototype);
+  const t = Object.create(tuple.prototype, {
+    length: {
+      value: argc,
+      enumerable: false,
+      writable: false,
+      configurable: false
+    }
+  });
 
   // Define immutable items with numeric indexes, and permanently fix the
   // `.length` property.
   for (let i = 0; i < argc; ++i) {
-    def(t, i, arguments[i], true);
+    t[i] = arguments[i];
   }
-  def(t, "length", argc, false);
 
   // Remember this new `tuple` object so that we can return the same object
   // earlier next time.
-  return node.tuple = t;
+  return Object.freeze(node.tuple = t);
 }
 
 // Named imports work as well as `default` imports.
@@ -77,11 +83,10 @@ function def(obj, name, value, enumerable) {
 // or `tuple.prototype` will be unique, so `value instanceof tuple` is
 // unreliable. Instead, to test if a value is a tuple, you should use
 // `tuple.isTuple(value)`.
+def(tuple.prototype, brand, true, false);
 function isTuple(that) {
   return !! (that && that[brand] === true);
 }
-
-def(tuple.prototype, brand, true, false);
 
 tuple.isTuple = isTuple;
 

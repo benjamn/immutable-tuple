@@ -56,7 +56,7 @@ export default function tuple() {
 
   // Remember this new `tuple` object so that we can return the same object
   // earlier next time.
-  return Object.freeze(node.tuple = t);
+  return freeze(node.tuple = t);
 }
 
 // Named imports work as well as `default` imports.
@@ -72,6 +72,10 @@ function def(obj, name, value, enumerable) {
   });
   return value;
 }
+
+var freeze = Object.freeze || function (obj) {
+  return obj;
+};
 
 // Since the `immutable-tuple` package could be installed multiple times
 // in an application, there is no guarantee that the `tuple` constructor

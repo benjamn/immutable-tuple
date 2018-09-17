@@ -1,21 +1,13 @@
-// See [`universal-weak-map.js`](universal-weak-map.html).
-import { UniversalWeakMap } from "./universal-weak-map.js";
+// See [`lookup.js`](lookup.html).
+import { lookup } from "./lookup.js";
 
 // See [`util.js`](util.html).
 import {
   brand,
-  globalKey,
+  def,
+  freeze,
   forEachArrayMethod,
 } from "./util.js";
-
-// If this package is installed multiple times, there could be mutiple
-// implementations of the `tuple` function with distinct `tuple.prototype`
-// objects, but the shared pool of `tuple` objects must be the same across
-// all implementations. While it would be ideal to use the `global`
-// object, there's no reliable way to get the global object across all JS
-// environments without using the `Function` constructor, so instead we
-// use the global `Array` constructor as a shared namespace.
-const root = Array[globalKey] || def(Array, globalKey, new UniversalWeakMap, false);
 
 // When called with any number of arguments, this function returns an
 // object that inherits from `tuple.prototype` and is guaranteed to be
@@ -25,21 +17,8 @@ const root = Array[globalKey] || def(Array, globalKey, new UniversalWeakMap, fal
 // it possible for tuple objects to be used as `Map` or `WeakMap` keys, or
 // stored in a `Set`.
 export default function tuple() {
-  let node = root;
+  const node = lookup.apply(null, arguments);
 
-  // Because we are building a tree of *weak* maps, the tree will not
-  // prevent objects in tuples from being garbage collected, since the
-  // tree itself will be pruned over time when the corresponding `tuple`
-  // objects become unreachable. In addition to internalization, this
-  // property is a key advantage of the `immutable-tuple` package.
-  const argc = arguments.length;
-  for (let i = 0; i < argc; ++i) {
-    const item = arguments[i];
-    node = node.get(item) || node.set(item, new UniversalWeakMap);
-  }
-
-  // If a `tuple` object has already been created for exactly these items,
-  // return that object again.
   if (node.tuple) {
     return node.tuple;
   }
@@ -48,6 +27,7 @@ export default function tuple() {
 
   // Define immutable items with numeric indexes, and permanently fix the
   // `.length` property.
+  const argc = arguments.length;
   for (let i = 0; i < argc; ++i) {
     t[i] = arguments[i];
   }
@@ -60,22 +40,7 @@ export default function tuple() {
 }
 
 // Named imports work as well as `default` imports.
-export { tuple };
-
-// Convenient helper for defining hidden immutable properties.
-function def(obj, name, value, enumerable) {
-  Object.defineProperty(obj, name, {
-    value: value,
-    enumerable: !! enumerable,
-    writable: false,
-    configurable: false
-  });
-  return value;
-}
-
-var freeze = Object.freeze || function (obj) {
-  return obj;
-};
+export { tuple, lookup };
 
 // Since the `immutable-tuple` package could be installed multiple times
 // in an application, there is no guarantee that the `tuple` constructor

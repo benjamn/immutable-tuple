@@ -16,6 +16,21 @@ export const globalKey = useSymbol
   ? Symbol.for("immutable-tuple-root")
   : "@@__IMMUTABLE_TUPLE_ROOT__@@";
 
+// Convenient helper for defining hidden immutable properties.
+export function def(obj, name, value, enumerable) {
+  Object.defineProperty(obj, name, {
+    value: value,
+    enumerable: !! enumerable,
+    writable: false,
+    configurable: false
+  });
+  return value;
+}
+
+export const freeze = Object.freeze || function (obj) {
+  return obj;
+};
+
 // The `mustConvertThisToArray` value is true when the corresponding
 // `Array` method does not attempt to modify `this`, which means we can
 // pass a `tuple` object as `this` without first converting it to an

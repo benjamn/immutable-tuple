@@ -7,6 +7,7 @@ export class UniversalWeakMap {
     // and `this._strongMap` are lazily initialized.
     this._weakMap = null;
     this._strongMap = null;
+    this.data = null;
   }
 
   // Since `get` and `set` are the only methods used, that's all I've

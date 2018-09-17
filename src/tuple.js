@@ -44,20 +44,15 @@ export default function tuple() {
     return node.tuple;
   }
 
-  const t = Object.create(tuple.prototype, {
-    length: {
-      value: argc,
-      enumerable: false,
-      writable: false,
-      configurable: false
-    }
-  });
+  const t = Object.create(tuple.prototype);
 
   // Define immutable items with numeric indexes, and permanently fix the
   // `.length` property.
   for (let i = 0; i < argc; ++i) {
     t[i] = arguments[i];
   }
+
+  def(t, "length", argc, false);
 
   // Remember this new `tuple` object so that we can return the same object
   // earlier next time.

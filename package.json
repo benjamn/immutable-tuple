@@ -1,6 +1,6 @@
 {
   "name": "immutable-tuple",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "description": "Immutable finite list objects with constant-time equality testing (===) and no memory leaks",
   "license": "MIT",
   "author": {

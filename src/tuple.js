@@ -1,5 +1,5 @@
 // See [`lookup.js`](lookup.html).
-import { lookup } from "./lookup.js";
+import { lookup, lookupArray } from "./lookup.js";
 
 // See [`util.js`](util.html).
 import {
@@ -40,7 +40,7 @@ export default function tuple() {
 }
 
 // Named imports work as well as `default` imports.
-export { tuple, lookup };
+export { tuple, lookup, lookupArray };
 
 // Since the `immutable-tuple` package could be installed multiple times
 // in an application, there is no guarantee that the `tuple` constructor

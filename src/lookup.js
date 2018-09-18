@@ -14,6 +14,10 @@ import { globalKey, def } from "./util.js";
 const root = Array[globalKey] || def(Array, globalKey, new UniversalWeakMap, false);
 
 export function lookup() {
+  return lookupArray(arguments);
+}
+
+export function lookupArray(array) {
   let node = root;
 
   // Because we are building a tree of *weak* maps, the tree will not
@@ -21,9 +25,9 @@ export function lookup() {
   // tree itself will be pruned over time when the corresponding `tuple`
   // objects become unreachable. In addition to internalization, this
   // property is a key advantage of the `immutable-tuple` package.
-  const argc = arguments.length;
-  for (let i = 0; i < argc; ++i) {
-    const item = arguments[i];
+  const len = array.length;
+  for (let i = 0; i < len; ++i) {
+    const item = array[i];
     node = node.get(item) || node.set(item, new UniversalWeakMap);
   }
 

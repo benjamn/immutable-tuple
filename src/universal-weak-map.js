@@ -1,3 +1,5 @@
+import { isObjRef } from "./util.js";
+
 // A map data structure that holds object keys weakly, yet can also hold
 // non-object keys, unlike the native `WeakMap`.
 export class UniversalWeakMap {
@@ -36,18 +38,5 @@ export class UniversalWeakMap {
       return this._weakMap || (this._weakMap = new WeakMap);
     }
     return this._strongMap || (this._strongMap = new Map);
-  }
-}
-
-function isObjRef(value) {
-  switch (typeof value) {
-  case "object":
-    if (value === null) {
-      return false;
-    }
-  case "function":
-    return true;
-  default:
-    return false;
   }
 }

@@ -31,6 +31,19 @@ export const freeze = Object.freeze || function (obj) {
   return obj;
 };
 
+export function isObjRef(value) {
+  switch (typeof value) {
+  case "object":
+    if (value === null) {
+      return false;
+    }
+  case "function":
+    return true;
+  default:
+    return false;
+  }
+}
+
 // The `mustConvertThisToArray` value is true when the corresponding
 // `Array` method does not attempt to modify `this`, which means we can
 // pass a `tuple` object as `this` without first converting it to an

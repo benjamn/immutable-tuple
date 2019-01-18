@@ -1,7 +1,9 @@
 // Although `Symbol` is widely supported these days, we can safely fall
 // back to using a non-enumerable string property without violating any
 // assumptions elsewhere in the implementation.
-const useSymbol = typeof Symbol === "function";
+const useSymbol =
+  typeof Symbol === "function" &&
+  typeof Symbol.for === "function";
 
 // Used to mark `tuple.prototype` so that all objects that inherit from
 // any `tuple.prototype` object (there could be more than one) will test

@@ -41,6 +41,7 @@ export default function tuple() {
 
 // Named imports work as well as `default` imports.
 export { tuple, lookup, lookupArray };
+export { UniversalWeakMap } from "./universal-weak-map.js";
 
 // Since the `immutable-tuple` package could be installed multiple times
 // in an application, there is no guarantee that the `tuple` constructor
